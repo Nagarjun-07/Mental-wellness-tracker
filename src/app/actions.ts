@@ -38,7 +38,7 @@ export async function analyzeJournalEntry(userId: string, entryText: string) {
     if (!safeText.trim()) throw new Error("Journal entry cannot be empty.");
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: `${JOURNAL_ANALYSIS_PROMPT}\n\nJournal Entry: ${safeText}`,
     });
 
@@ -53,7 +53,7 @@ export async function analyzeJournalEntry(userId: string, entryText: string) {
     const journalRef = collection(db, "journals");
     await addDoc(journalRef, {
       userId,
-      text: entryText,
+      text: safeText,
       analysis,
       createdAt: new Date(), // using local date instead of serverTimestamp for simpler serialization back to client if needed
     });
@@ -89,7 +89,7 @@ export async function getBurnoutScore(userId: string) {
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: prompt,
     });
 
@@ -134,7 +134,7 @@ export async function getTriggerInsights(userId: string) {
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: prompt,
     });
 
@@ -176,7 +176,7 @@ export async function chatWithCompanion(userId: string, message: string, history
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: prompt,
     });
 
@@ -212,6 +212,18 @@ export async function getEmotionalTimeline(userId: string) {
 }
 
 export async function evaluateStudyBalance(studyHours: number, sleepHours: number, exerciseMin: number) {
+  if (
+    isNaN(studyHours) || studyHours < 0 || studyHours > 24 ||
+    isNaN(sleepHours) || sleepHours < 0 || sleepHours > 24 ||
+    isNaN(exerciseMin) || exerciseMin < 0 || exerciseMin > 1440
+  ) {
+    return {
+      score: 0,
+      feedback: "Invalid daily routine duration input.",
+      recommendation: "Please make sure study/sleep hours are [0-24] and exercise is [0-1440] minutes."
+    };
+  }
+
   try {
     const prompt = `
       Evaluate the study-wellness balance for a student with:
@@ -228,7 +240,7 @@ export async function evaluateStudyBalance(studyHours: number, sleepHours: numbe
     `;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.1-flash-lite',
       contents: prompt,
     });
 
@@ -267,6 +279,10 @@ export async function getJournalHistory(userId: string) {
 }
 
 export async function deleteJournalEntry(id: string) {
+  if (typeof id !== "string" || !id.trim() || id.includes("/") || id.includes("..")) {
+    return { success: false, error: "Invalid document ID key." };
+  }
+
   try {
     if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return { success: false, error: "Firebase not configured" };
 

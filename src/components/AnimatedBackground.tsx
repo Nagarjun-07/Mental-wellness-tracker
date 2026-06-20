@@ -5,22 +5,24 @@ import { useEffect, useState } from "react";
 
 export function AnimatedBackground() {
   const [mounted, setMounted] = useState(false);
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; size: number; duration: number; delay: number; }[]>([]);
   
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
+
+    const generated = Array.from({ length: 40 }).map((_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: Math.random() * 2 + 1,
+      duration: Math.random() * 20 + 20,
+      delay: Math.random() * 5,
+    }));
+    setParticles(generated);
   }, []);
 
   if (!mounted) return null;
-
-  // Generate 40 random particles
-  const particles = Array.from({ length: 40 }).map((_, i) => ({
-    id: i,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    size: Math.random() * 2 + 1,
-    duration: Math.random() * 20 + 20,
-    delay: Math.random() * 5,
-  }));
 
   return (
     <div className="fixed inset-0 z-[-1] overflow-hidden bg-[#030303] pointer-events-none">

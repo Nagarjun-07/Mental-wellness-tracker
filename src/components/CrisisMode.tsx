@@ -28,7 +28,7 @@ export function CrisisMode() {
           animate={{ opacity: 1, height: "auto", scale: 1 }}
           exit={{ opacity: 0, height: 0, scale: 0.95 }}
         >
-          <Alert variant="destructive" className="bg-destructive/20 border-destructive/50 text-white backdrop-blur-md relative overflow-hidden">
+          <Alert variant="destructive" className="bg-destructive border-destructive/50 text-destructive-foreground relative overflow-hidden">
             <div className="absolute top-0 right-0 p-4 opacity-10">
               <ShieldAlert className="h-24 w-24" />
             </div>

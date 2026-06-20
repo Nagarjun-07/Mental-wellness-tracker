@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useRef } from "react";
@@ -81,7 +82,7 @@ export function AIJournal() {
       <Card className="glass max-w-2xl mx-auto overflow-hidden relative">
         {isSubmitting && (
           <div 
-            className="absolute inset-0 z-10 bg-background/50 backdrop-blur-sm flex flex-col items-center justify-center"
+            className="absolute inset-0 z-10 bg-background/90 flex flex-col items-center justify-center"
             aria-live="polite"
             aria-atomic="true"
           >
@@ -112,6 +113,7 @@ export function AIJournal() {
           <div className="relative">
             <Textarea 
               placeholder="How are you feeling today? Any specific triggers?"
+              aria-label="Write your journal entry here"
               className="min-h-[200px] resize-none bg-black/20 border-white/10 text-base p-4 focus-visible:ring-primary/50"
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -120,7 +122,7 @@ export function AIJournal() {
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleRecording}
-              aria-label={isRecording ? "Stop recording" : "Start recording"}
+              aria-label={isRecording ? "Stop voice recording" : "Start voice recording"}
               aria-pressed={isRecording}
               className={`absolute bottom-4 right-4 p-3 rounded-full transition-colors shadow-lg ${
                 isRecording 

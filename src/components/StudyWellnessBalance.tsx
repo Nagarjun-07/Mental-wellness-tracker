@@ -30,16 +30,16 @@ export function StudyWellnessBalance() {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-3 gap-4">
           <div className="space-y-2">
-            <label className="text-xs text-muted-foreground flex items-center gap-1"><BookOpen className="h-3 w-3"/> Study (hrs)</label>
-            <Input type="number" value={study} onChange={e => setStudy(e.target.value)} className="bg-black/20 border-white/10" />
+            <label htmlFor="study-hours-input" className="text-xs text-muted-foreground flex items-center gap-1"><BookOpen className="h-3 w-3"/> Study (hrs)</label>
+            <Input id="study-hours-input" type="number" value={study} onChange={e => setStudy(e.target.value)} className="bg-black/20 border-white/10" />
           </div>
           <div className="space-y-2">
-            <label className="text-xs text-muted-foreground flex items-center gap-1"><Moon className="h-3 w-3"/> Sleep (hrs)</label>
-            <Input type="number" value={sleep} onChange={e => setSleep(e.target.value)} className="bg-black/20 border-white/10" />
+            <label htmlFor="sleep-hours-input" className="text-xs text-muted-foreground flex items-center gap-1"><Moon className="h-3 w-3"/> Sleep (hrs)</label>
+            <Input id="sleep-hours-input" type="number" value={sleep} onChange={e => setSleep(e.target.value)} className="bg-black/20 border-white/10" />
           </div>
           <div className="space-y-2">
-            <label className="text-xs text-muted-foreground flex items-center gap-1"><Activity className="h-3 w-3"/> Exercise (min)</label>
-            <Input type="number" value={exercise} onChange={e => setExercise(e.target.value)} className="bg-black/20 border-white/10" />
+            <label htmlFor="exercise-minutes-input" className="text-xs text-muted-foreground flex items-center gap-1"><Activity className="h-3 w-3"/> Exercise (min)</label>
+            <Input id="exercise-minutes-input" type="number" value={exercise} onChange={e => setExercise(e.target.value)} className="bg-black/20 border-white/10" />
           </div>
         </div>
         
@@ -59,7 +59,7 @@ export function StudyWellnessBalance() {
                 {result.score}/100
               </span>
             </div>
-            <p className="text-sm italic">"{result.feedback}"</p>
+            <p className="text-sm italic">&ldquo;{result.feedback}&rdquo;</p>
             <div className="bg-primary/10 p-2 rounded text-xs text-primary">
               <span className="font-semibold block mb-1">Recommendation:</span>
               {result.recommendation}

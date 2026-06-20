@@ -51,4 +51,14 @@ describe('Server Actions', () => {
     expect(result.score).toBe(85);
     expect(result.feedback).toBe('Great balance');
   });
+
+  it('evaluateStudyBalance rejects out-of-bound or invalid values', async () => {
+    const resultInvalidHours = await evaluateStudyBalance(25, 8, 30);
+    expect(resultInvalidHours.score).toBe(0);
+    expect(resultInvalidHours.feedback).toBe("Invalid daily routine duration input.");
+
+    const resultInvalidExercise = await evaluateStudyBalance(8, 8, -5);
+    expect(resultInvalidExercise.score).toBe(0);
+    expect(resultInvalidExercise.recommendation).toContain("exercise is [0-1440] minutes");
+  });
 });

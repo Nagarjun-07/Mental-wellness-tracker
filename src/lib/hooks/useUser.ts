@@ -13,6 +13,7 @@ export function useUser() {
       id = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15);
       localStorage.setItem('manasutra_user_id', id);
     }
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUserId(id);
   }, []);
 

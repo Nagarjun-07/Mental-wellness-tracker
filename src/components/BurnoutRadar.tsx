@@ -16,7 +16,7 @@ export function BurnoutRadar() {
   useEffect(() => {
     if (!userId) return;
     getBurnoutScore(userId).then(res => {
-      setData(res as any);
+      setData(res);
       setLoading(false);
     });
   }, [userId]);

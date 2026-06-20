@@ -34,13 +34,13 @@ export function PredictiveAlert() {
         `;
 
         const response = await ai.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.1-flash-lite',
           contents: prompt,
         });
 
         setPrediction(response.text || null);
       } catch (error) {
-        if ((error as any)?.code !== 'failed-precondition') {
+        if ((error as { code?: string })?.code !== 'failed-precondition') {
           console.error("Failed to generate prediction:", error);
         }
       }
@@ -53,7 +53,7 @@ export function PredictiveAlert() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-      <Alert className="bg-primary/10 border-primary/20 text-primary-foreground backdrop-blur-md">
+      <Alert className="bg-primary/10 border-primary/20 text-primary-foreground">
         <Sparkles className="h-5 w-5 text-primary" />
         <AlertTitle className="text-primary font-bold flex items-center gap-2">
           7-Day Predictive AI Alert <TrendingUp className="h-4 w-4" />

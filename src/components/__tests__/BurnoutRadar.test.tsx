@@ -20,10 +20,15 @@ class ResizeObserver {
 window.ResizeObserver = ResizeObserver;
 
 describe('BurnoutRadar Component', () => {
-  it('renders loading state initially', () => {
+  it('renders loading state initially and then loads', async () => {
     render(<BurnoutRadar />);
-    // The heading is not rendered while loading
+    // The heading is not rendered while loading, it returns the loader Card
     expect(screen.queryByRole('heading', { name: /burnout radar/i })).not.toBeInTheDocument();
+    
+    // Wait for the state changes to complete to prevent un-act-wrapped warnings
+    await waitFor(() => {
+      expect(screen.getByText('75')).toBeInTheDocument();
+    });
   });
 
   it('renders burnout score after loading', async () => {

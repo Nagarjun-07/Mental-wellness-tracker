@@ -80,6 +80,7 @@ export function JournalHistory() {
                         onClick={() => handleDelete(journal.id)}
                         className="p-1 ml-2 text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
                         title="Delete Entry"
+                        aria-label="Delete this journal entry"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </button>

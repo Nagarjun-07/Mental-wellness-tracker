@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 
 export function EmotionalTimeline() {
   const userId = useUser();
-  const [data, setData] = useState<any[]>([]);
+  const [data, setData] = useState<{ date: string; stress: number; confidence: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

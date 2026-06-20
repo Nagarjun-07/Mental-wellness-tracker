@@ -79,7 +79,7 @@ export function TriggerEngine() {
                 
                 <div className="flex-1">
                   <p className="text-xs text-muted-foreground mb-1 font-semibold uppercase tracking-wider">Evidence</p>
-                  <p className="text-sm italic text-white/80 border-l-2 border-primary/50 pl-3">"{trigger.evidence}"</p>
+                  <p className="text-sm italic text-white/80 border-l-2 border-primary/50 pl-3">&ldquo;{trigger.evidence}&rdquo;</p>
                 </div>
                 
                 <div className="bg-primary/10 rounded-md p-3 mt-auto">

@@ -6,7 +6,7 @@ import { chatWithCompanion } from "@/app/actions";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Bot, Send, User, Loader2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -129,11 +129,13 @@ export function CompanionChat() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type your message..." 
+            aria-label="Type your message to AI Wellness Coach"
             className="flex-1 bg-black/20 border-white/10 focus-visible:ring-primary/50"
             disabled={isLoading}
           />
           <button 
             type="submit" 
+            aria-label="Send message"
             disabled={!input.trim() || isLoading}
             className="bg-primary text-primary-foreground p-2 rounded-md hover:bg-primary/90 transition-colors disabled:opacity-50"
           >
