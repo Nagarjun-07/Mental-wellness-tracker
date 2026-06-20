@@ -58,11 +58,18 @@ export function EmotionalTimeline() {
                     <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
                 <XAxis dataKey="date" stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
                 <YAxis stroke="rgba(255,255,255,0.5)" fontSize={12} tickLine={false} axisLine={false} />
                 <Tooltip 
-                  contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }} 
+                  cursor={{ stroke: 'rgba(255,255,255,0.1)', strokeWidth: 1, strokeDasharray: '3 3' }}
+                  contentStyle={{ 
+                    backgroundColor: 'rgba(0,0,0,0.6)', 
+                    backdropFilter: 'blur(16px)', 
+                    borderColor: 'rgba(255,255,255,0.08)', 
+                    borderRadius: '12px',
+                    boxShadow: '0 8px 32px 0 rgba(0,0,0,0.37)'
+                  }} 
                   itemStyle={{ color: '#fff' }}
                 />
                 <Area type="monotone" dataKey="stress" stroke="hsl(var(--destructive))" fillOpacity={1} fill="url(#colorStress)" name="Stress Level" dot={{ r: 4, fill: "hsl(var(--background))", strokeWidth: 2 }} activeDot={{ r: 6 }} />

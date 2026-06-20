@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { Sidebar } from "@/components/Sidebar";
+import { AnimatedBackground } from "@/components/AnimatedBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,8 +30,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark`}
     >
-      <body className="min-h-screen flex flex-col aurora-bg overflow-hidden">
-        <div className="flex h-screen w-full">
+      <body className="min-h-screen flex flex-col aurora-bg overflow-hidden text-foreground">
+        <AnimatedBackground />
+        <div className="flex h-screen w-full relative z-10">
           <Sidebar />
           <main className="flex-1 w-full overflow-y-auto px-4 sm:px-8 lg:px-12 py-8">
             <div className="max-w-6xl mx-auto w-full">

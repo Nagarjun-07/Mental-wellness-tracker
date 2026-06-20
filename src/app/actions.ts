@@ -4,10 +4,22 @@ import { db } from "@/lib/firebase";
 import { ai } from "@/lib/gemini";
 import { collection, addDoc, getDocs, query, where, orderBy, limit, doc, deleteDoc } from "firebase/firestore/lite";
 
+export interface FirebaseError extends Error {
+  code?: string;
+}
+
+// Security: Simple input sanitizer to block extreme long texts or weird payloads
+function sanitizeText(text: string) {
+  if (typeof text !== 'string') return "";
+  // Limit to 5000 chars to prevent token exhaustion attacks
+  return text.slice(0, 5000).replace(/[<>]/g, ""); // basic XSS prevention
+}
+
 // Helper to structure journal analysis prompt
 const JOURNAL_ANALYSIS_PROMPT = `
 You are an expert clinical psychologist and AI wellness engine. 
-Analyze the following journal entry from a student preparing for exams.
+Analyze the following journal entry from a student preparing for high-stakes board exams and competitive entrance tests (e.g., NEET, JEE, CUET, CAT, GATE, UPSC).
+The student is likely facing severe stress, burnout, and self-doubt. Uncover hidden stress triggers and emotional patterns that standard trackers miss.
 Extract the following in JSON format:
 {
   "dominantEmotions": ["Emotion 1", "Emotion 2"],
@@ -22,9 +34,12 @@ Only return the raw JSON object.
 
 export async function analyzeJournalEntry(userId: string, entryText: string) {
   try {
+    const safeText = sanitizeText(entryText);
+    if (!safeText.trim()) throw new Error("Journal entry cannot be empty.");
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `${JOURNAL_ANALYSIS_PROMPT}\n\nJournal Entry: ${entryText}`,
+      contents: `${JOURNAL_ANALYSIS_PROMPT}\n\nJournal Entry: ${safeText}`,
     });
 
     const text = response.text || "{}";
@@ -83,7 +98,7 @@ export async function getBurnoutScore(userId: string) {
       explanation: response.text || "",
     };
   } catch (error) {
-    if ((error as any)?.code !== 'failed-precondition') {
+    if ((error as FirebaseError)?.code !== 'failed-precondition') {
       console.error("Error getting burnout score:", error);
     }
     return { score: 0, explanation: "Unable to calculate burnout score at the moment." };
@@ -128,7 +143,7 @@ export async function getTriggerInsights(userId: string) {
     return JSON.parse(cleanedText);
 
   } catch (error) {
-    if ((error as any)?.code !== 'failed-precondition') {
+    if ((error as FirebaseError)?.code !== 'failed-precondition') {
       console.error("Error getting trigger insights:", error);
     }
     return [];
@@ -139,15 +154,23 @@ export async function chatWithCompanion(userId: string, message: string, history
   try {
     const formattedHistory = history.map(h => `${h.role}: ${h.content}`).join('\n');
     const prompt = `
-      You are an AI Wellness Companion for students preparing for high-stress exams.
-      You are empathetic, supportive, and clinical-psychology informed.
+      You are an AI Wellness Companion for students preparing for high-stakes board exams and competitive entrance tests (e.g., NEET, JEE, CUET, CAT, GATE, UPSC).
+      You are an empathetic, always-available digital companion. 
+      
+      Your goal is to provide hyper-personalized, contextual wellness support. Based on the user's message, you MUST include at least one of the following in your response:
+      1. Real-time tailored coping strategies.
+      2. Adaptive mindfulness exercises.
+      3. Motivational encouragement.
+      
+      SAFETY BOUNDARY: Act safely. If the user indicates severe clinical distress or self-harm, gently encourage them to seek professional help immediately while remaining supportive.
+      
       Context: User ID ${userId} is talking to you.
       
       Conversation History:
       ${formattedHistory}
       
       User's New Message:
-      ${message}
+      ${sanitizeText(message)}
       
       Provide a helpful, concise, and emotionally intelligent response.
     `;
@@ -181,7 +204,7 @@ export async function getEmotionalTimeline(userId: string) {
       };
     });
   } catch (error) {
-    if ((error as any)?.code !== 'failed-precondition') {
+    if ((error as FirebaseError)?.code !== 'failed-precondition') {
       console.error("Error fetching timeline:", error);
     }
     return [];
@@ -236,7 +259,7 @@ export async function getJournalHistory(userId: string) {
       };
     });
   } catch (error) {
-    if ((error as any)?.code !== 'failed-precondition') {
+    if ((error as FirebaseError)?.code !== 'failed-precondition') {
       console.error("Error fetching journal history:", error);
     }
     return [];

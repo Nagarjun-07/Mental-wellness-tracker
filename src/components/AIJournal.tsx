@@ -80,7 +80,11 @@ export function AIJournal() {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
       <Card className="glass max-w-2xl mx-auto overflow-hidden relative">
         {isSubmitting && (
-          <div className="absolute inset-0 z-10 bg-background/50 backdrop-blur-sm flex flex-col items-center justify-center">
+          <div 
+            className="absolute inset-0 z-10 bg-background/50 backdrop-blur-sm flex flex-col items-center justify-center"
+            aria-live="polite"
+            aria-atomic="true"
+          >
             <Sparkles className="h-8 w-8 text-primary animate-pulse mb-4" />
             <p className="font-medium animate-pulse">Gemini is analyzing your emotions...</p>
           </div>
@@ -101,6 +105,7 @@ export function AIJournal() {
               onValueChange={(val) => setMood(Array.isArray(val) ? Array.from(val) : [val as number])} 
               max={100} step={1}
               className="py-4"
+              aria-label="Mood Slider"
             />
           </div>
 
@@ -111,27 +116,33 @@ export function AIJournal() {
               value={text}
               onChange={(e) => setText(e.target.value)}
             />
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
               onClick={toggleRecording}
-              className={`absolute bottom-4 right-4 p-3 rounded-full transition-all ${
+              aria-label={isRecording ? "Stop recording" : "Start recording"}
+              aria-pressed={isRecording}
+              className={`absolute bottom-4 right-4 p-3 rounded-full transition-colors shadow-lg ${
                 isRecording 
-                  ? "bg-destructive text-destructive-foreground animate-pulse" 
-                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
+                  ? "bg-destructive text-destructive-foreground animate-pulse shadow-[0_0_20px_rgba(var(--destructive),0.5)]" 
+                  : "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-white/10"
               }`}
             >
               {isRecording ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
-            </button>
+            </motion.button>
           </div>
         </CardContent>
         <CardFooter className="justify-end bg-black/10 border-t border-white/5 mt-4 pt-4">
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
             disabled={!text.trim() || isSubmitting}
             onClick={handleSubmit}
-            className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-md font-medium hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            className="flex items-center gap-2 bg-primary text-primary-foreground px-6 py-2.5 rounded-xl font-semibold hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(var(--primary),0.3)] disabled:opacity-50 transition-all border border-white/10"
           >
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
             Analyze & Save
-          </button>
+          </motion.button>
         </CardFooter>
       </Card>
     </motion.div>

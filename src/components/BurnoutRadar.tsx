@@ -48,17 +48,31 @@ export function BurnoutRadar() {
                 barSize={15} data={chartData} 
                 startAngle={180} endAngle={0}
               >
+                <defs>
+                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="4" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                  </filter>
+                </defs>
                 <PolarAngleAxis type="number" domain={[0, 100]} angleAxisId={0} tick={false} />
                 <RadialBar 
-                  background={{ fill: "rgba(255,255,255,0.05)" }} 
+                  background={{ fill: "rgba(255,255,255,0.02)" }} 
                   dataKey="value" 
                   cornerRadius={10} 
+                  style={{ filter: 'url(#glow)' }}
                 />
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex flex-col items-center justify-center mt-6">
-              <span className="text-4xl font-bold">{score}</span>
-              <span className="text-xs text-muted-foreground uppercase tracking-wider">Score</span>
+              <motion.span 
+                initial={{ scale: 0.5, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 100, damping: 15 }}
+                className="text-4xl font-bold tracking-tighter text-white"
+              >
+                {score}
+              </motion.span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-widest mt-1">Risk</span>
             </div>
           </div>
           <p className="text-sm text-center text-muted-foreground mt-4 leading-relaxed">
