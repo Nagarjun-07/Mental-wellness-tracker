@@ -65,8 +65,8 @@ export function EmotionalTimeline() {
                   contentStyle={{ backgroundColor: 'rgba(0,0,0,0.8)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '8px' }} 
                   itemStyle={{ color: '#fff' }}
                 />
-                <Area type="monotone" dataKey="stress" stroke="hsl(var(--destructive))" fillOpacity={1} fill="url(#colorStress)" name="Stress Level" />
-                <Area type="monotone" dataKey="confidence" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorConfidence)" name="Confidence" />
+                <Area type="monotone" dataKey="stress" stroke="hsl(var(--destructive))" fillOpacity={1} fill="url(#colorStress)" name="Stress Level" dot={{ r: 4, fill: "hsl(var(--background))", strokeWidth: 2 }} activeDot={{ r: 6 }} />
+                <Area type="monotone" dataKey="confidence" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorConfidence)" name="Confidence" dot={{ r: 4, fill: "hsl(var(--background))", strokeWidth: 2 }} activeDot={{ r: 6 }} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

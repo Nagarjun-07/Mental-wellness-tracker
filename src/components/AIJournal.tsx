@@ -72,7 +72,7 @@ export function AIJournal() {
       setText("");
       setMood([50]);
     } else {
-      toast.error("Failed to analyze journal.");
+      toast.error(result.error || "Failed to analyze journal.");
     }
   };
 

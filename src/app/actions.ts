@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/firebase";
 import { ai } from "@/lib/gemini";
-import { collection, addDoc, getDocs, query, where, orderBy, limit, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, orderBy, limit, doc, deleteDoc } from "firebase/firestore/lite";
 
 // Helper to structure journal analysis prompt
 const JOURNAL_ANALYSIS_PROMPT = `
@@ -32,6 +32,9 @@ export async function analyzeJournalEntry(userId: string, entryText: string) {
     const analysis = JSON.parse(cleanedText);
 
     // Save to Firestore
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) {
+      throw new Error("Firebase keys missing. Please add Firebase config to .env.local");
+    }
     const journalRef = collection(db, "journals");
     await addDoc(journalRef, {
       userId,
@@ -43,13 +46,15 @@ export async function analyzeJournalEntry(userId: string, entryText: string) {
     return { success: true, analysis };
   } catch (error) {
     console.error("Error analyzing journal:", error);
-    return { success: false, error: "Failed to analyze journal entry." };
+    return { success: false, error: error instanceof Error ? error.message : "Failed to analyze journal entry." };
   }
 }
 
 export async function getBurnoutScore(userId: string) {
   // Try to fetch latest 5 journals to determine trend
   try {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return { score: 0, explanation: "Firebase not configured." };
+
     const q = query(collection(db, "journals"), where("userId", "==", userId), orderBy("createdAt", "desc"), limit(5));
     const querySnapshot = await getDocs(q);
     
@@ -78,13 +83,17 @@ export async function getBurnoutScore(userId: string) {
       explanation: response.text || "",
     };
   } catch (error) {
-    console.error("Error getting burnout score:", error);
+    if ((error as any)?.code !== 'failed-precondition') {
+      console.error("Error getting burnout score:", error);
+    }
     return { score: 0, explanation: "Unable to calculate burnout score at the moment." };
   }
 }
 
 export async function getTriggerInsights(userId: string) {
   try {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return [];
+
     const q = query(collection(db, "journals"), where("userId", "==", userId), orderBy("createdAt", "desc"), limit(15));
     const querySnapshot = await getDocs(q);
     
@@ -119,7 +128,9 @@ export async function getTriggerInsights(userId: string) {
     return JSON.parse(cleanedText);
 
   } catch (error) {
-    console.error("Error getting trigger insights:", error);
+    if ((error as any)?.code !== 'failed-precondition') {
+      console.error("Error getting trigger insights:", error);
+    }
     return [];
   }
 }
@@ -155,6 +166,8 @@ export async function chatWithCompanion(userId: string, message: string, history
 
 export async function getEmotionalTimeline(userId: string) {
   try {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return [];
+
     const q = query(collection(db, "journals"), where("userId", "==", userId), orderBy("createdAt", "asc"), limit(30));
     const querySnapshot = await getDocs(q);
     
@@ -168,7 +181,9 @@ export async function getEmotionalTimeline(userId: string) {
       };
     });
   } catch (error) {
-    console.error("Error fetching timeline:", error);
+    if ((error as any)?.code !== 'failed-precondition') {
+      console.error("Error fetching timeline:", error);
+    }
     return [];
   }
 }
@@ -200,5 +215,43 @@ export async function evaluateStudyBalance(studyHours: number, sleepHours: numbe
   } catch (error) {
     console.error("Error evaluating balance:", error);
     return { score: 50, feedback: "Unable to evaluate at the moment.", recommendation: "Maintain a steady routine." };
+  }
+}
+
+export async function getJournalHistory(userId: string) {
+  try {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return [];
+
+    const q = query(collection(db, "journals"), where("userId", "==", userId), orderBy("createdAt", "desc"), limit(20));
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      const date = data.createdAt?.toDate ? data.createdAt.toDate() : new Date(data.createdAt);
+      return {
+        id: doc.id,
+        text: data.text,
+        date: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        emotions: data.analysis?.dominantEmotions || [],
+      };
+    });
+  } catch (error) {
+    if ((error as any)?.code !== 'failed-precondition') {
+      console.error("Error fetching journal history:", error);
+    }
+    return [];
+  }
+}
+
+export async function deleteJournalEntry(id: string) {
+  try {
+    if (!process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID) return { success: false, error: "Firebase not configured" };
+
+    const journalRef = doc(db, "journals", id);
+    await deleteDoc(journalRef);
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting journal entry:", error);
+    return { success: false, error: "Failed to delete entry" };
   }
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useUser } from "@/lib/hooks/useUser";
-import { collection, query, where, getDocs, limit, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, limit, orderBy } from "firebase/firestore/lite";
 import { db } from "@/lib/firebase";
 import { ai } from "@/lib/gemini";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -40,7 +40,9 @@ export function PredictiveAlert() {
 
         setPrediction(response.text || null);
       } catch (error) {
-        console.error("Failed to generate prediction");
+        if ((error as any)?.code !== 'failed-precondition') {
+          console.error("Failed to generate prediction:", error);
+        }
       }
     }
 

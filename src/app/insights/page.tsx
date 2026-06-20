@@ -4,6 +4,7 @@ import { EmotionalTimeline } from "@/components/EmotionalTimeline";
 import { StudyWellnessBalance } from "@/components/StudyWellnessBalance";
 import { PredictiveAlert } from "@/components/PredictiveAlert";
 import { Download } from "lucide-react";
+import { JournalHistory } from "@/components/JournalHistory";
 
 export default function InsightsPage() {
   return (
@@ -31,6 +32,10 @@ export default function InsightsPage() {
         <div className="lg:col-span-1">
           <StudyWellnessBalance />
         </div>
+      </div>
+
+      <div className="mt-8">
+        <JournalHistory />
       </div>
     </div>
   );
